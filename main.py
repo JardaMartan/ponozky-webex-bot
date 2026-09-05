@@ -86,11 +86,10 @@ def handle_get_request(request, webex: WebexService, sheets: SheetsManager):
     test_room = request.args.get("test_room")
 
     message = ""
-    setup_result = None
 
     if action == "setup" or request.args.get("setup") == "1":
         # Automatically cancel old webhooks and register this URL
-        setup_result = webex.setup_webhooks(target_url=current_url)
+        webex.setup_webhooks(target_url=current_url)
         message = "✅ Webhooky byly úspěšně nastaveny na tuto URL a všechny předchozí byly zrušeny."
 
     elif action == "send_test":
@@ -283,16 +282,12 @@ def handle_post_webhook(request, webex: WebexService, sheets: SheetsManager):
             return ("Could not fetch action details", 500)
 
         inputs = action_details.get("inputs", {})
-        selected_raw = inputs.get("selected_sock_item", inputs.get("selected_socks", ""))
+        selected_raw = inputs.get("selected_sock_item", "")
         note = inputs.get("order_note", "").strip()
 
-        # Parse model and size
+        # Parse model and size (card values are "Model###Size")
         if "###" in selected_raw:
             model, size = selected_raw.split("###", 1)
-        elif "-" in selected_raw:
-            parts = selected_raw.split("-", 1)
-            model = parts[0].strip()
-            size = parts[1].strip()
         else:
             model = selected_raw or "Nezadáno"
             size = "Univerzální"

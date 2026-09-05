@@ -40,18 +40,6 @@ class WebexService:
             print(f"Chyba při načítání detailu uživatele {person_id}: {e}")
         return {}
 
-    def get_person_by_email(self, email: str) -> Dict[str, Any]:
-        """Looks up a person's profile by email address."""
-        try:
-            resp = requests.get(f"{WEBEX_API_URL}/people", headers=self.headers, params={"email": email}, timeout=10)
-            if resp.status_code == 200:
-                items = resp.json().get("items", [])
-                if items:
-                    return items[0]
-        except Exception as e:
-            print(f"Chyba při vyhledávání uživatele podle emailu {email}: {e}")
-        return {}
-
     def get_attachment_action(self, action_id: str, retries: int = 2, backoff_seconds: float = 1.0) -> Dict[str, Any]:
         """Fetches adaptive card submission inputs and details.
         Correct endpoint per Webex docs is /v1/attachment/actions/{id} (note the
